@@ -50,10 +50,10 @@ struct AuthView: View {
         }
         
         func loadContents() {
-            guard let url = URL(string: "https://svt.se") else {
-                return
-            }
-            page?.load(URLRequest(url: url))
+            guard let url = Bundle.main.url(forResource: "authpage", withExtension: "html") else { return }
+            guard let htmlString = try? String(contentsOf: url, encoding: .utf8) else { return }
+            
+            page?.load(html: htmlString)
         }
 
 }
