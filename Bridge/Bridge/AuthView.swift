@@ -12,11 +12,27 @@ struct AuthView: View {
     @EnvironmentObject var sessionManager: SessionManager
     @State private var page: WebPage?
     private let datastore: WKWebsiteDataStore = .nonPersistent()
+    
+    private let snippet = """
+                        function setUserInfo() {
+                            document.getElementById("userInfo").innerHTML = "Injected user info"
+                            }
+            setUserInfo()
+            """
+    
+    
     var body: some View {
         
         Group {
             if let page {
                 WebView(page)
+                    .task {
+                        do {
+                            try await page.callJavaScript(snippet)
+                        } catch {
+                            print("Error calling JavaScript: \(error)")
+                        }
+                    }
             } else {
                 Text("Waiting")
             }

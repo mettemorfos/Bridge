@@ -2,9 +2,16 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <script>
+            function test() {
+                let temp = document.getElementById("input").value;
+                document.getElementById("result").innerHTML = temp;
+                }
+        </script>
     </head>
-    <h1>Hello user</h1>
+    <h2 id="userInfo"></h2>
     <h3>Enter code:</h3>
-    <input/>
-    <button> Submit </button>
+    <input id="input"/>
+    <button onclick="test()"> Submit </button>
+    <p id="result"><p>
 </html>
