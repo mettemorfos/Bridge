@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct LoginView: View {
+    
+    @EnvironmentObject var sessionManager: SessionManager
+    
     var body: some View {
         Text("Log in")
+        Button("Log in") {
+            sessionManager.login()
+        }
     }
 }
 

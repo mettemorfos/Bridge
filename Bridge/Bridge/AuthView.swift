@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct AuthView: View {
+    @EnvironmentObject var sessionManager: SessionManager
     var body: some View {
         Text("Authenticate")
+        Button("Submit") {
+            sessionManager.authenticate()
+        }
     }
 }
 

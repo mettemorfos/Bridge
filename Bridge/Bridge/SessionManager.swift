@@ -6,3 +6,25 @@
 //
 
 import Foundation
+import Combine
+
+class SessionManager: ObservableObject {
+    
+    enum sessionState {
+        case loggedIn
+        case loggedOut
+        case authenticating
+    }
+    
+    @Published var session: sessionState = .loggedOut
+    
+    func login() {
+        session = .authenticating
+    }
+    
+    func authenticate() {
+        session = .loggedIn
+    }
+    
+    
+}
