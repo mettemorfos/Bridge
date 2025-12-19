@@ -18,7 +18,7 @@ class SessionManager: ObservableObject {
     
     @Published var session: sessionState = .loggedOut
     
-    func login() {
+    func login(email: String, password: String) {
         session = .authenticating
     }
     
