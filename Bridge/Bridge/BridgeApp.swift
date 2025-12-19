@@ -9,9 +9,20 @@ import SwiftUI
 
 @main
 struct BridgeApp: App {
+    
+    @StateObject var sessionManager: SessionManager = SessionManager()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            switch sessionManager.session {
+            case .loggedOut:
+                LoginView()
+            case .authenticating:
+                AuthView()
+            case .loggedIn:
+                ContentView()
+            }
         }
+        .environmentObject(sessionManager)
     }
 }
