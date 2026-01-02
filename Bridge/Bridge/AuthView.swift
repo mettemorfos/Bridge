@@ -9,71 +9,36 @@ import SwiftUI
 import WebKit
 
 struct AuthView: View {
-    @EnvironmentObject var sessionManager: SessionManager
-    @State private var page: WebPage?
-    private let datastore: WKWebsiteDataStore = .nonPersistent()
     
-    private let snippet = """
-                        function setUserInfo() {
-                            document.getElementById("userInfo").innerHTML = "Injected user info"
-                            }
-            setUserInfo()
-            """
+    @State private var viewModel: AuthViewModel
     
+    init(sessionManager: SessionManager) {
+        _viewModel = State(wrappedValue: AuthViewModel(sessionManager: sessionManager))
+    }
     
     var body: some View {
         
         Group {
-            if let page {
+            if let page = viewModel.page {
+                
                 WebView(page)
-                    .task {
-                        do {
-                            try await page.callJavaScript(snippet)
-                        } catch {
-                            print("Error calling JavaScript: \(error)")
+                    .onChange(of: page.isLoading, initial: true, {
+                        if !page.isLoading {
+                            viewModel.injectContent()
                         }
-                    }
+                    })
             } else {
-                Text("Waiting")
+                Text("Waiting...")
             }
         }
         .onAppear() {
-            initWebpage()
-            loadContents()
+            viewModel.setup()
         }
-        
-        
     }
-    
-    func initWebpage() {
-            var configuration = WebPage.Configuration()
-            
-            var navigationPreference = WebPage.NavigationPreferences()
-            
-            navigationPreference.allowsContentJavaScript = true
-            navigationPreference.preferredHTTPSNavigationPolicy = .errorOnFailure
-            navigationPreference.preferredContentMode = .recommended
-            configuration.defaultNavigationPreferences = navigationPreference
-            
-            configuration.websiteDataStore = self.datastore
-            
-            configuration.applicationNameForUserAgent = "AuthView"
-            
-            let page = WebPage(configuration: configuration)
-            
-            self.page = page
-            
-        }
-        
-        func loadContents() {
-            guard let url = Bundle.main.url(forResource: "authpage", withExtension: "html") else { return }
-            guard let htmlString = try? String(contentsOf: url, encoding: .utf8) else { return }
-            
-            page?.load(html: htmlString)
-        }
-
 }
 
 #Preview {
-    AuthView()
+    AuthView(sessionManager: SessionManager())
 }
+
+

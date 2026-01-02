@@ -18,7 +18,7 @@ struct BridgeApp: App {
             case .loggedOut:
                 LoginView()
             case .authenticating:
-                AuthView()
+                AuthView(sessionManager: sessionManager)
             case .loggedIn:
                 ContentView()
             }
