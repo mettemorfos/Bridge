@@ -9,54 +9,35 @@ import SwiftUI
 
 struct LoginView: View {
     
-    @State var email: String = ""
-    @State var password: String = ""
-    @State var showError: Bool = false
+    @State var viewModel: LoginViewModel
     
-    @EnvironmentObject var sessionManager: SessionManager
+    init(sessionManager: SessionManager) {
+        _viewModel = State(wrappedValue: LoginViewModel(sessionManager: sessionManager))
+    }
     
     var body: some View {
         Text("Enter your credentials here:")
         VStack(spacing: 15) {
-            TextField("Email", text: $email)
+            TextField("Email", text: $viewModel.email)
                 .keyboardType(.emailAddress)
                 .textContentType(.emailAddress)
                 .disableAutocorrection(true)
                 .autocapitalization(.none)
-            SecureField("Password", text: $password)
+            SecureField("Password", text: $viewModel.password)
         }
         .padding(20)
         Button("Log in") {
-            attemptLogin()
+            viewModel.attemptLogin()
         }
-        if showError {
+        if viewModel.showError {
             Text("Invalid email or password")
                 .foregroundColor(.red)
         }
     }
     
-    func attemptLogin() {
-        guard !email.isEmpty, !password.isEmpty else {
-            showError = true
-            return
-        }
-        
-        guard isValidEmail(email) else {
-            showError = true
-            return
-        }
-        
-        sessionManager.login(email: email, password: password)
-    }
     
-    func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,64}$"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES[c] %@", emailRegex)
-        return emailPredicate.evaluate(with: email)
-    }
 }
 
 #Preview {
-    LoginView()
-        .environmentObject(SessionManager())
+    LoginView(sessionManager: SessionManager())
 }

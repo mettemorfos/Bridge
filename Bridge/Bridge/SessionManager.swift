@@ -6,9 +6,10 @@
 //
 
 import Foundation
-import Combine
+import SwiftUI
 
-class SessionManager: ObservableObject {
+@MainActor
+@Observable final class SessionManager {
     
     enum sessionState {
         case loggedIn
@@ -17,7 +18,7 @@ class SessionManager: ObservableObject {
         case accessError
     }
     
-    @Published var session: sessionState = .loggedOut
+    var session: sessionState = .loggedOut
     
     func login(email: String, password: String) {
         session = .authenticating

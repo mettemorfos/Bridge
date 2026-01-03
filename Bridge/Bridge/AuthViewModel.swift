@@ -16,7 +16,7 @@ import WebKit
     let sessionManager: SessionManager
     private let messageName = "authHandler"
     
-    init (sessionManager: SessionManager) {
+    init(sessionManager: SessionManager) {
         self.sessionManager = sessionManager
     }
     

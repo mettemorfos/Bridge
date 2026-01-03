@@ -10,13 +10,13 @@ import SwiftUI
 @main
 struct BridgeApp: App {
     
-    @StateObject var sessionManager: SessionManager = SessionManager()
+    @State var sessionManager: SessionManager = SessionManager()
     
     var body: some Scene {
         WindowGroup {
             switch sessionManager.session {
             case .loggedOut:
-                LoginView()
+                LoginView(sessionManager: sessionManager)
             case .authenticating:
                 AuthView(sessionManager: sessionManager)
             case .loggedIn:
@@ -25,6 +25,5 @@ struct BridgeApp: App {
                 ErrorView()
             }
         }
-        .environmentObject(sessionManager)
     }
 }
