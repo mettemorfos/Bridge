@@ -19,8 +19,10 @@ import SwiftUI
     }
     
     var session: sessionState = .loggedOut
+    var userName: String?
     
     func login(email: String, password: String) {
+        userName = email
         session = .authenticating
     }
     

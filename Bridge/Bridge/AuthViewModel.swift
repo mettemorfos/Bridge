@@ -26,8 +26,8 @@ import WebKit
     }
     
     func injectContent() {
-        guard let page else { return }
-        let myValue = "Value from session: xxx"
+        guard let page, let name = sessionManager.userName else { return }
+        let myValue = "Sign-in as \(name)"
         let snippet = """
                     document.getElementById('userInfo').innerHTML = "\(myValue)";
                     """
