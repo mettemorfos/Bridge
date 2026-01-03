@@ -21,6 +21,8 @@ struct BridgeApp: App {
                 AuthView(sessionManager: sessionManager)
             case .loggedIn:
                 ContentView()
+            case .accessError:
+                ErrorView()
             }
         }
         .environmentObject(sessionManager)

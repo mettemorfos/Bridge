@@ -5,6 +5,7 @@
 //  Created by Mette Broegaard on 2026-01-02.
 //
 
+import Foundation
 import SwiftUI
 import WebKit
 
@@ -12,8 +13,8 @@ import WebKit
 @Observable final class AuthViewModel: NSObject {
     
     var page: WebPage?
-    
     let sessionManager: SessionManager
+    private let messageName = "authHandler"
     
     init (sessionManager: SessionManager) {
         self.sessionManager = sessionManager
@@ -48,7 +49,7 @@ import WebKit
         navigationPreference.preferredHTTPSNavigationPolicy = .errorOnFailure
         navigationPreference.preferredContentMode = .recommended
         configuration.defaultNavigationPreferences = navigationPreference
-        configuration.userContentController.add(self, name: "authHandler")
+        configuration.userContentController.add(self, name: messageName)
     
         let page = WebPage(configuration: configuration)
         
@@ -66,10 +67,20 @@ import WebKit
 
 extension AuthViewModel: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print("Received: \(message.body)")
-        sessionManager.authenticate()
+        guard message.name == self.messageName else { return }
+        
+        if let code = getCode(data: message.body) {
+            sessionManager.authenticate(code: code)
+        }
     }
     
+    private func getCode(data: Any) -> String? {
+        guard let json = data as? [String: Any] else {
+            return nil
+        }
+        
+        return json["code"] as? String
+    }
     
 }
 

@@ -6,7 +6,11 @@
             function test() {
                 let temp = document.getElementById("input").value;
                 document.getElementById("result").innerHTML = temp;
-                window.webkit.messageHandlers.authHandler.postMessage({param1: "a string", param2: temp});
+                window.webkit.messageHandlers.authHandler.postMessage({
+                    "param1": "a value",
+                    "param2": "another value",
+                    "code": temp
+                });
                 }
         </script>
     </head>

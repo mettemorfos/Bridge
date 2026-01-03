@@ -14,6 +14,7 @@ class SessionManager: ObservableObject {
         case loggedIn
         case loggedOut
         case authenticating
+        case accessError
     }
     
     @Published var session: sessionState = .loggedOut
@@ -22,9 +23,15 @@ class SessionManager: ObservableObject {
         session = .authenticating
     }
     
-    func authenticate() {
-        session = .loggedIn
+    func authenticate(code: String) {
+        if isValid(code) {
+            session = .loggedIn
+        } else {
+            session = .accessError
+        }
     }
     
-    
+    private func isValid(_ code: String) -> Bool {
+        return !code.isEmpty
+    }
 }
