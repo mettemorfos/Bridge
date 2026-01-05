@@ -15,6 +15,7 @@ import WebKit
     var page: WebPage?
     let sessionManager: SessionManager
     private let messageName = "authHandler"
+    private var navigationDecider = NavigationDecider()
     
     init(sessionManager: SessionManager) {
         self.sessionManager = sessionManager
@@ -50,8 +51,8 @@ import WebKit
         navigationPreference.preferredContentMode = .recommended
         configuration.defaultNavigationPreferences = navigationPreference
         configuration.userContentController.add(self, name: messageName)
-    
-        let page = WebPage(configuration: configuration)
+        
+        let page = WebPage(configuration: configuration, navigationDecider: self.navigationDecider)
         
         self.page = page
     }
@@ -63,6 +64,12 @@ import WebKit
         page?.load(html: htmlString)
     }
     
+    private class NavigationDecider: WebPage.NavigationDeciding {
+        func decidePolicy(for action: WebPage.NavigationAction, preferences: inout WebPage.NavigationPreferences) async -> WKNavigationActionPolicy {
+            //checking that only trusted url:s are loaded could be done here
+            return .allow
+        }
+    }
 }
 
 extension AuthViewModel: WKScriptMessageHandler {
@@ -81,8 +88,5 @@ extension AuthViewModel: WKScriptMessageHandler {
         
         return json["code"] as? String
     }
-    
 }
-
-
 
