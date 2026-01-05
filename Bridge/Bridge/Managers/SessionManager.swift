@@ -22,19 +22,28 @@ import SwiftUI
     var userName: String?
     
     func login(email: String, password: String) {
+        guard isValidUser(email: email, password: password) else {
+            return
+        }
         userName = email
         session = .authenticating
     }
     
     func authenticate(code: String) {
-        if isValid(code) {
+        if isValidCode(code) {
             session = .loggedIn
         } else {
             session = .accessError
         }
     }
     
-    private func isValid(_ code: String) -> Bool {
+    private func isValidUser(email: String, password: String) -> Bool {
+        //proper check of user credentials would go here
+        return !email.isEmpty && !password.isEmpty
+    }
+    
+    private func isValidCode(_ code: String) -> Bool {
+        //proper check of code would go here
         return !code.isEmpty
     }
 }
