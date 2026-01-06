@@ -28,14 +28,28 @@ import WebKit
     
     func injectContent() {
         guard let page, let name = sessionManager.userName else { return }
+        
         let myValue = "Sign-in as \(name)"
-        let snippet = """
+        let script = """
+                    
                     document.getElementById('userInfo').innerHTML = "\(myValue)";
+                    
+                    document.getElementById('submit').addEventListener('click', myFunction, false);
+                    
+                    function myFunction() {
+                            let temp = document.getElementById("input").value;
+                            window.webkit.messageHandlers.authHandler.postMessage({
+                                                       "param1": "a value",
+                                                       "param2": "another value",
+                                                       "code": temp
+                                                   });
+                    }
+                    
                     """
         
         Task {
             do {
-                try await page.callJavaScript(snippet)
+                try await page.callJavaScript(script)
             } catch {
                 print("Error calling JavaScript: \(error)")
             }
