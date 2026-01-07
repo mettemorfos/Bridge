@@ -15,6 +15,7 @@ import WebKit
     var page: WebPage?
     let sessionManager: SessionManager
     private let messageName = "authHandler"
+    private var navigationDecider = NavigationDecider()
     
     init(sessionManager: SessionManager) {
         self.sessionManager = sessionManager
@@ -27,14 +28,28 @@ import WebKit
     
     func injectContent() {
         guard let page, let name = sessionManager.userName else { return }
+        
         let myValue = "Sign-in as \(name)"
-        let snippet = """
+        let script = """
+                    
                     document.getElementById('userInfo').innerHTML = "\(myValue)";
+                    
+                    document.getElementById('submit').addEventListener('click', myFunction, false);
+                    
+                    function myFunction() {
+                            let temp = document.getElementById("input").value;
+                            window.webkit.messageHandlers.authHandler.postMessage({
+                                                       "param1": "a value",
+                                                       "param2": "another value",
+                                                       "code": temp
+                                                   });
+                    }
+                    
                     """
         
         Task {
             do {
-                try await page.callJavaScript(snippet)
+                try await page.callJavaScript(script)
             } catch {
                 print("Error calling JavaScript: \(error)")
             }
@@ -50,8 +65,8 @@ import WebKit
         navigationPreference.preferredContentMode = .recommended
         configuration.defaultNavigationPreferences = navigationPreference
         configuration.userContentController.add(self, name: messageName)
-    
-        let page = WebPage(configuration: configuration)
+        
+        let page = WebPage(configuration: configuration, navigationDecider: self.navigationDecider)
         
         self.page = page
     }
@@ -63,6 +78,12 @@ import WebKit
         page?.load(html: htmlString)
     }
     
+    private class NavigationDecider: WebPage.NavigationDeciding {
+        func decidePolicy(for action: WebPage.NavigationAction, preferences: inout WebPage.NavigationPreferences) async -> WKNavigationActionPolicy {
+            //checking that only trusted url:s are loaded could be done here
+            return .allow
+        }
+    }
 }
 
 extension AuthViewModel: WKScriptMessageHandler {
@@ -81,8 +102,5 @@ extension AuthViewModel: WKScriptMessageHandler {
         
         return json["code"] as? String
     }
-    
 }
-
-
 
