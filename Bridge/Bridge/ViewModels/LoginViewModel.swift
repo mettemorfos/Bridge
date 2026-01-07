@@ -31,7 +31,11 @@ import SwiftUI
             return
         }
         
-        sessionManager.login(email: email, password: password)
+        do {
+            try sessionManager.login(email: email, password: password)
+        } catch {
+            showError = true
+        }
     }
     
     func isValidEmail(_ email: String) -> Bool {

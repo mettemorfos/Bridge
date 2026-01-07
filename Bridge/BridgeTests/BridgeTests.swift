@@ -30,13 +30,18 @@ struct BridgeTests {
         
         let emptyPassword = ""
         
-        await sessionManager.login(email: email, password: emptyPassword)
+        await #expect(throws: (any Error).self) {
+            try await sessionManager.login(email: email, password: emptyPassword)
+        }
         
         var state = await sessionManager.session
         #expect(state == .loggedOut)
         
         let okPassword = "password"
-        await sessionManager.login(email: email, password: okPassword)
+        try await sessionManager.login(email: email, password: okPassword)
+        await #expect(throws: Never.self) {
+            try await sessionManager.login(email: email, password: okPassword)
+        }
         state = await sessionManager.session
         #expect(state == .authenticating)
     }

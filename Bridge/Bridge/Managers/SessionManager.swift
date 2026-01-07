@@ -18,12 +18,16 @@ import SwiftUI
         case accessError
     }
     
+    enum SessionError: Error {
+        case invalidCredentials
+    }
+    
     var session: sessionState = .loggedOut
     var userName: String?
     
-    func login(email: String, password: String) {
+    func login(email: String, password: String) throws {
         guard isValidUser(email: email, password: password) else {
-            return
+            throw SessionError.invalidCredentials
         }
         userName = email
         session = .authenticating
